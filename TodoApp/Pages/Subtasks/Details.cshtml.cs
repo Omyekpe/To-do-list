@@ -22,6 +22,9 @@ public class DetailsModel : PageModel
 
     public bool IsLocked(StepItem step) => _storage.IsStepLocked(step);
 
+    public int DoneStepCount => Steps.Count(s => s.IsDone);
+    public int StepCount => Steps.Count;
+
     public IActionResult OnGet(int id)
     {
         Subtask = _storage.GetSubtask(id);

@@ -4,54 +4,88 @@
     ViewData["Title"] = Model.Subtask?.Name ?? "Subtask";
 }
 
-<p><a asp-page="/Tasks/Details" asp-route-id="@Model.Subtask?.TaskId">&larr; Back to Task</a></p>
-<h1>@Model.Subtask?.Name</h1>
+<a class="breadcrumb-link" asp-page="/Tasks/Details" asp-route-id="@Model.Subtask?.TaskId">&larr; Back to Task</a>
+<h1 class="page-title">@Model.Subtask?.Name</h1>
 
-<h2>Steps</h2>
+<h2 class="section-title">Steps</h2>
 
-<form method="post" asp-page-handler="AddStep">
+@if (Model.StepCount > 0)
+{
+    var percent = Model.DoneStepCount * 100 / Model.StepCount;
+    <div class="progress-summary">
+        <div class="progress-track">
+            <div class="progress-fill" style="width:@(percent)%"></div>
+        </div>
+        <span class="progress-label">@Model.DoneStepCount / @Model.StepCount done</span>
+    </div>
+}
+
+<form method="post" asp-page-handler="AddStep" class="add-form">
     <input type="text" asp-for="NewStepName" placeholder="New step name" />
-    <button type="submit">Add Step</button>
+    <button type="submit" class="btn-add">+ Add Step</button>
 </form>
 
-<ol>
+@if (Model.StepCount == 0)
+{
+    <p class="empty-state">No steps yet &mdash; break this subtask down by adding one above.</p>
+}
+
+<ol class="quest-list">
     @foreach (var step in Model.Steps)
     {
         var locked = Model.IsLocked(step);
-        <li>
-            <form method="post" asp-page-handler="MoveStepUp" style="display:inline">
-                <input type="hidden" name="stepId" value="@step.Id" />
-                <button type="submit">&uarr;</button>
-            </form>
-            <form method="post" asp-page-handler="MoveStepDown" style="display:inline">
-                <input type="hidden" name="stepId" value="@step.Id" />
-                <button type="submit">&darr;</button>
-            </form>
+        <li class="quest-card @(locked ? "is-locked" : "") @(step.IsDone ? "is-done" : "")">
+            <span class="order-pill">@step.Order</span>
+
+            <div class="move-group">
+                <form method="post" asp-page-handler="MoveStepUp">
+                    <input type="hidden" name="stepId" value="@step.Id" />
+                    <button type="submit" class="btn-move">&uarr;</button>
+                </form>
+                <form method="post" asp-page-handler="MoveStepDown">
+                    <input type="hidden" name="stepId" value="@step.Id" />
+                    <button type="submit" class="btn-move">&darr;</button>
+                </form>
+            </div>
 
             @if (locked)
             {
                 <input type="checkbox" disabled />
-                <span>@step.Name (Locked &mdash; finish the previous step first)</span>
+                <div class="quest-main">
+                    <span class="quest-title is-locked">@step.Name</span>
+                    <span class="badge-status locked">Locked</span>
+                </div>
             }
             else
             {
-                <form method="post" asp-page-handler="ToggleStep" style="display:inline">
+                <form method="post" asp-page-handler="ToggleStep">
                     <input type="hidden" name="stepId" value="@step.Id" />
                     <input type="checkbox" onchange="this.form.submit()" checked="@step.IsDone" />
                 </form>
-                <span style="text-decoration:@(step.IsDone ? "line-through" : "none")">@step.Name</span>
+                <div class="quest-main">
+                    <span class="quest-title @(step.IsDone ? "is-done" : "")">@step.Name</span>
+                    @if (step.IsDone)
+                    {
+                        <span class="badge-status done">Done</span>
+                    }
+                    else
+                    {
+                        <span class="badge-status active">In progress</span>
+                    }
+                </div>
             }
 
-            <form method="post" asp-page-handler="RenameStep" style="display:inline">
+            <button type="button" class="btn-rename" onclick="toggleRename(this)">Rename</button>
+            <form method="post" asp-page-handler="RenameStep" class="rename-form" style="display:none">
                 <input type="hidden" name="stepId" value="@step.Id" />
                 <input type="text" name="name" value="@step.Name" />
-                <button type="submit">Rename</button>
+                <button type="submit" class="btn-rename">Save</button>
             </form>
 
-            <form method="post" asp-page-handler="DeleteStep" style="display:inline"
+            <form method="post" asp-page-handler="DeleteStep"
                   onsubmit="return confirm('Delete this step?')">
                 <input type="hidden" name="stepId" value="@step.Id" />
-                <button type="submit">Delete</button>
+                <button type="submit" class="btn-delete">Delete</button>
             </form>
         </li>
     }

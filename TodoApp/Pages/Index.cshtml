@@ -4,29 +4,37 @@
     ViewData["Title"] = "Projects";
 }
 
-<h1>Projects</h1>
+<h1 class="page-title">Your Projects</h1>
 
-<form method="post">
+<form method="post" class="add-form">
     <input type="text" asp-for="NewProjectName" placeholder="New project name" />
-    <button type="submit">Add Project</button>
+    <button type="submit" class="btn-add">+ Add Project</button>
 </form>
 
-<ul>
+@if (Model.Projects.Count == 0)
+{
+    <p class="empty-state">No projects yet &mdash; add one above to start your first quest.</p>
+}
+
+<ul class="quest-list">
     @foreach (var project in Model.Projects)
     {
-        <li>
-            <a asp-page="/Projects/Details" asp-route-id="@project.Id">@project.Name</a>
+        <li class="quest-card">
+            <div class="quest-main">
+                <a class="quest-title" asp-page="/Projects/Details" asp-route-id="@project.Id">@project.Name</a>
+            </div>
 
-            <form method="post" asp-page-handler="RenameProject" style="display:inline">
+            <button type="button" class="btn-rename" onclick="toggleRename(this)">Rename</button>
+            <form method="post" asp-page-handler="RenameProject" class="rename-form" style="display:none">
                 <input type="hidden" name="projectId" value="@project.Id" />
                 <input type="text" name="name" value="@project.Name" />
-                <button type="submit">Rename</button>
+                <button type="submit" class="btn-rename">Save</button>
             </form>
 
             <form method="post" asp-page-handler="DeleteProject" style="display:inline"
                   onsubmit="return confirm('Delete this project and everything under it?')">
                 <input type="hidden" name="projectId" value="@project.Id" />
-                <button type="submit">Delete</button>
+                <button type="submit" class="btn-delete">Delete</button>
             </form>
         </li>
     }

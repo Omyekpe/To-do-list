@@ -101,8 +101,8 @@ public class TodoStorageService
             var task = GetTask(id);
             if (task is null) return;
 
-            // Only a leaf Task (no Subtasks yet) can be toggled by hand.
-            if (GetSubtasks(task.Id).Count == 0)
+            // Only an unlocked, leaf Task (no Subtasks yet) can be toggled by hand.
+            if (!IsTaskLocked(task) && GetSubtasks(task.Id).Count == 0)
             {
                 task.IsDone = !task.IsDone;
                 Save();
@@ -198,8 +198,8 @@ public class TodoStorageService
             var subtask = GetSubtask(id);
             if (subtask is null) return;
 
-            // Only a leaf Subtask (no Steps yet) can be toggled by hand.
-            if (GetSteps(subtask.Id).Count == 0)
+            // Only an unlocked, leaf Subtask (no Steps yet) can be toggled by hand.
+            if (!IsSubtaskLocked(subtask) && GetSteps(subtask.Id).Count == 0)
             {
                 subtask.IsDone = !subtask.IsDone;
             }
@@ -296,6 +296,9 @@ public class TodoStorageService
         {
             var step = GetStep(id);
             if (step is null) return;
+
+            // A locked Step can't be completed out of order.
+            if (IsStepLocked(step)) return;
 
             step.IsDone = !step.IsDone;
             RecomputeSubtaskDone(step.SubtaskId);

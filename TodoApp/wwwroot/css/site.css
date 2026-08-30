@@ -1,31 +1,327 @@
-html {
-  font-size: 14px;
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface-2: #232734;
+  --border: #2e3242;
+  --text: #e7e9f0;
+  --text-muted: #8b90a3;
+  --accent: #f2b134;
+  --accent-2: #7c5cff;
+  --success: #35d488;
+  --danger: #ff5470;
+  --locked: #4b4f5e;
+  --radius: 10px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
+a {
+  color: var(--accent);
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Header */
+
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 0;
+  margin-bottom: 1.5rem;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.site-brand {
+  color: var(--accent) !important;
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+
+/* Layout helpers */
+
+.breadcrumb-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-link:hover {
+  color: var(--accent);
+}
+
+.page-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0.25rem 0 1rem;
+  color: var(--text);
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 1.5rem 0 0.75rem;
+}
+
+/* Progress bar */
+
+.progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.progress-track {
+  flex: 1;
+  background: var(--surface-2);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Add form */
+
+.add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.add-form input[type="text"] {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+.add-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-add {
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  border: none;
+  color: #181a22;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  filter: brightness(1.08);
+}
+
+/* Quest list / cards */
+
+.quest-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.quest-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.quest-card.is-locked {
+  opacity: 0.5;
+}
+
+.quest-card.is-done {
+  border-color: rgba(53, 212, 136, 0.4);
+}
+
+.order-pill {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  min-width: 1.6rem;
+  text-align: center;
+}
+
+.quest-main {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 12rem;
+}
+
+.quest-title {
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.quest-title:hover {
+  color: var(--accent);
+}
+
+.quest-title.is-done {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.quest-title.is-locked {
+  color: var(--locked);
+}
+
+.badge-status {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge-status.done {
+  background: rgba(53, 212, 136, 0.15);
+  color: var(--success);
+}
+
+.badge-status.locked {
+  background: rgba(75, 79, 94, 0.3);
+  color: var(--text-muted);
+}
+
+.badge-status.active {
+  background: rgba(242, 177, 52, 0.15);
+  color: var(--accent);
+}
+
+.badge-status.auto {
+  background: rgba(124, 92, 255, 0.15);
+  color: var(--accent-2);
+}
+
+/* Controls */
+
+.move-group {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.btn-move {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  width: 1.9rem;
+  height: 1.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.btn-move:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rename-form {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.rename-form input[type="text"] {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.85rem;
+  width: 9rem;
+}
+
+.rename-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-rename {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-rename:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-delete {
+  background: none;
+  border: 1px solid rgba(255, 84, 112, 0.4);
+  color: var(--danger);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-delete:hover {
+  background: rgba(255, 84, 112, 0.12);
+}
+
+input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--success);
+  cursor: pointer;
+}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 1rem 0;
 }

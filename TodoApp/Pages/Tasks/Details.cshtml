@@ -4,34 +4,58 @@
     ViewData["Title"] = Model.Task?.Name ?? "Task";
 }
 
-<p><a asp-page="/Projects/Details" asp-route-id="@Model.Task?.ProjectId">&larr; Back to Project</a></p>
-<h1>@Model.Task?.Name</h1>
+<a class="breadcrumb-link" asp-page="/Projects/Details" asp-route-id="@Model.Task?.ProjectId">&larr; Back to Project</a>
+<h1 class="page-title">@Model.Task?.Name</h1>
 
-<h2>Subtasks</h2>
+<h2 class="section-title">Subtasks</h2>
 
-<form method="post" asp-page-handler="AddSubtask">
+@if (Model.SubtaskCount > 0)
+{
+    var percent = Model.DoneSubtaskCount * 100 / Model.SubtaskCount;
+    <div class="progress-summary">
+        <div class="progress-track">
+            <div class="progress-fill" style="width:@(percent)%"></div>
+        </div>
+        <span class="progress-label">@Model.DoneSubtaskCount / @Model.SubtaskCount done</span>
+    </div>
+}
+
+<form method="post" asp-page-handler="AddSubtask" class="add-form">
     <input type="text" asp-for="NewSubtaskName" placeholder="New subtask name" />
-    <button type="submit">Add Subtask</button>
+    <button type="submit" class="btn-add">+ Add Subtask</button>
 </form>
 
-<ol>
+@if (Model.SubtaskCount == 0)
+{
+    <p class="empty-state">No subtasks yet &mdash; break this task down by adding one above.</p>
+}
+
+<ol class="quest-list">
     @foreach (var subtask in Model.Subtasks)
     {
         var locked = Model.IsLocked(subtask);
         var hasSteps = Model.HasSteps(subtask);
-        <li>
-            <form method="post" asp-page-handler="MoveSubtaskUp" style="display:inline">
-                <input type="hidden" name="subtaskId" value="@subtask.Id" />
-                <button type="submit">&uarr;</button>
-            </form>
-            <form method="post" asp-page-handler="MoveSubtaskDown" style="display:inline">
-                <input type="hidden" name="subtaskId" value="@subtask.Id" />
-                <button type="submit">&darr;</button>
-            </form>
+        <li class="quest-card @(locked ? "is-locked" : "") @(subtask.IsDone ? "is-done" : "")">
+            <span class="order-pill">@subtask.Order</span>
 
-            @if (!hasSteps)
+            <div class="move-group">
+                <form method="post" asp-page-handler="MoveSubtaskUp">
+                    <input type="hidden" name="subtaskId" value="@subtask.Id" />
+                    <button type="submit" class="btn-move">&uarr;</button>
+                </form>
+                <form method="post" asp-page-handler="MoveSubtaskDown">
+                    <input type="hidden" name="subtaskId" value="@subtask.Id" />
+                    <button type="submit" class="btn-move">&darr;</button>
+                </form>
+            </div>
+
+            @if (locked)
             {
-                <form method="post" asp-page-handler="ToggleSubtask" style="display:inline">
+                <input type="checkbox" checked="@subtask.IsDone" disabled title="Locked &mdash; finish the previous subtask first" />
+            }
+            else if (!hasSteps)
+            {
+                <form method="post" asp-page-handler="ToggleSubtask">
                     <input type="hidden" name="subtaskId" value="@subtask.Id" />
                     <input type="checkbox" onchange="this.form.submit()" checked="@subtask.IsDone" />
                 </form>
@@ -41,27 +65,41 @@
                 <input type="checkbox" checked="@subtask.IsDone" disabled title="Auto-completes when all Steps are done" />
             }
 
-            @if (locked)
-            {
-                <span>@subtask.Name (Locked &mdash; finish the previous subtask first)</span>
-            }
-            else
-            {
-                <a asp-page="/Subtasks/Details" asp-route-id="@subtask.Id">
-                    <span style="text-decoration:@(subtask.IsDone ? "line-through" : "none")">@subtask.Name</span>
-                </a>
-            }
+            <div class="quest-main">
+                @if (locked)
+                {
+                    <span class="quest-title is-locked">@subtask.Name</span>
+                    <span class="badge-status locked">Locked</span>
+                }
+                else
+                {
+                    <a class="quest-title @(subtask.IsDone ? "is-done" : "")" asp-page="/Subtasks/Details" asp-route-id="@subtask.Id">@subtask.Name</a>
+                    @if (subtask.IsDone)
+                    {
+                        <span class="badge-status done">Done</span>
+                    }
+                    else if (hasSteps)
+                    {
+                        <span class="badge-status auto">Auto</span>
+                    }
+                    else
+                    {
+                        <span class="badge-status active">In progress</span>
+                    }
+                }
+            </div>
 
-            <form method="post" asp-page-handler="RenameSubtask" style="display:inline">
+            <button type="button" class="btn-rename" onclick="toggleRename(this)">Rename</button>
+            <form method="post" asp-page-handler="RenameSubtask" class="rename-form" style="display:none">
                 <input type="hidden" name="subtaskId" value="@subtask.Id" />
                 <input type="text" name="name" value="@subtask.Name" />
-                <button type="submit">Rename</button>
+                <button type="submit" class="btn-rename">Save</button>
             </form>
 
-            <form method="post" asp-page-handler="DeleteSubtask" style="display:inline"
+            <form method="post" asp-page-handler="DeleteSubtask"
                   onsubmit="return confirm('Delete this subtask and everything under it?')">
                 <input type="hidden" name="subtaskId" value="@subtask.Id" />
-                <button type="submit">Delete</button>
+                <button type="submit" class="btn-delete">Delete</button>
             </form>
         </li>
     }
