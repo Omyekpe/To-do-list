@@ -1,0 +1,58 @@
+@page "{id:int}"
+@model TodoApp.Pages.Subtasks.DetailsModel
+@{
+    ViewData["Title"] = Model.Subtask?.Name ?? "Subtask";
+}
+
+<p><a asp-page="/Tasks/Details" asp-route-id="@Model.Subtask?.TaskId">&larr; Back to Task</a></p>
+<h1>@Model.Subtask?.Name</h1>
+
+<h2>Steps</h2>
+
+<form method="post" asp-page-handler="AddStep">
+    <input type="text" asp-for="NewStepName" placeholder="New step name" />
+    <button type="submit">Add Step</button>
+</form>
+
+<ol>
+    @foreach (var step in Model.Steps)
+    {
+        var locked = Model.IsLocked(step);
+        <li>
+            <form method="post" asp-page-handler="MoveStepUp" style="display:inline">
+                <input type="hidden" name="stepId" value="@step.Id" />
+                <button type="submit">&uarr;</button>
+            </form>
+            <form method="post" asp-page-handler="MoveStepDown" style="display:inline">
+                <input type="hidden" name="stepId" value="@step.Id" />
+                <button type="submit">&darr;</button>
+            </form>
+
+            @if (locked)
+            {
+                <input type="checkbox" disabled />
+                <span>@step.Name (Locked &mdash; finish the previous step first)</span>
+            }
+            else
+            {
+                <form method="post" asp-page-handler="ToggleStep" style="display:inline">
+                    <input type="hidden" name="stepId" value="@step.Id" />
+                    <input type="checkbox" onchange="this.form.submit()" checked="@step.IsDone" />
+                </form>
+                <span style="text-decoration:@(step.IsDone ? "line-through" : "none")">@step.Name</span>
+            }
+
+            <form method="post" asp-page-handler="RenameStep" style="display:inline">
+                <input type="hidden" name="stepId" value="@step.Id" />
+                <input type="text" name="name" value="@step.Name" />
+                <button type="submit">Rename</button>
+            </form>
+
+            <form method="post" asp-page-handler="DeleteStep" style="display:inline"
+                  onsubmit="return confirm('Delete this step?')">
+                <input type="hidden" name="stepId" value="@step.Id" />
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    }
+</ol>

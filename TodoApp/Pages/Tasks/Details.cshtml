@@ -14,15 +14,55 @@
     <button type="submit">Add Subtask</button>
 </form>
 
-<ul>
+<ol>
     @foreach (var subtask in Model.Subtasks)
     {
+        var locked = Model.IsLocked(subtask);
+        var hasSteps = Model.HasSteps(subtask);
         <li>
-            <form method="post" asp-page-handler="ToggleSubtask" style="display:inline">
+            <form method="post" asp-page-handler="MoveSubtaskUp" style="display:inline">
                 <input type="hidden" name="subtaskId" value="@subtask.Id" />
-                <input type="checkbox" onchange="this.form.submit()" checked="@subtask.IsDone" />
+                <button type="submit">&uarr;</button>
             </form>
-            <span style="text-decoration:@(subtask.IsDone ? "line-through" : "none")">@subtask.Name</span>
+            <form method="post" asp-page-handler="MoveSubtaskDown" style="display:inline">
+                <input type="hidden" name="subtaskId" value="@subtask.Id" />
+                <button type="submit">&darr;</button>
+            </form>
+
+            @if (!hasSteps)
+            {
+                <form method="post" asp-page-handler="ToggleSubtask" style="display:inline">
+                    <input type="hidden" name="subtaskId" value="@subtask.Id" />
+                    <input type="checkbox" onchange="this.form.submit()" checked="@subtask.IsDone" />
+                </form>
+            }
+            else
+            {
+                <input type="checkbox" checked="@subtask.IsDone" disabled title="Auto-completes when all Steps are done" />
+            }
+
+            @if (locked)
+            {
+                <span>@subtask.Name (Locked &mdash; finish the previous subtask first)</span>
+            }
+            else
+            {
+                <a asp-page="/Subtasks/Details" asp-route-id="@subtask.Id">
+                    <span style="text-decoration:@(subtask.IsDone ? "line-through" : "none")">@subtask.Name</span>
+                </a>
+            }
+
+            <form method="post" asp-page-handler="RenameSubtask" style="display:inline">
+                <input type="hidden" name="subtaskId" value="@subtask.Id" />
+                <input type="text" name="name" value="@subtask.Name" />
+                <button type="submit">Rename</button>
+            </form>
+
+            <form method="post" asp-page-handler="DeleteSubtask" style="display:inline"
+                  onsubmit="return confirm('Delete this subtask and everything under it?')">
+                <input type="hidden" name="subtaskId" value="@subtask.Id" />
+                <button type="submit">Delete</button>
+            </form>
         </li>
     }
-</ul>
+</ol>

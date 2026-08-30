@@ -6,4 +6,5 @@ public class SubtaskItem
     public int TaskId { get; set; }
     public string Name { get; set; } = "";
     public bool IsDone { get; set; }
+    public int Order { get; set; }
 }

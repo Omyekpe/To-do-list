@@ -16,6 +16,18 @@
     {
         <li>
             <a asp-page="/Projects/Details" asp-route-id="@project.Id">@project.Name</a>
+
+            <form method="post" asp-page-handler="RenameProject" style="display:inline">
+                <input type="hidden" name="projectId" value="@project.Id" />
+                <input type="text" name="name" value="@project.Name" />
+                <button type="submit">Rename</button>
+            </form>
+
+            <form method="post" asp-page-handler="DeleteProject" style="display:inline"
+                  onsubmit="return confirm('Delete this project and everything under it?')">
+                <input type="hidden" name="projectId" value="@project.Id" />
+                <button type="submit">Delete</button>
+            </form>
         </li>
     }
 </ul>

@@ -20,6 +20,9 @@ public class DetailsModel : PageModel
     [BindProperty]
     public string NewTaskName { get; set; } = "";
 
+    public bool IsLocked(TaskItem task) => _storage.IsTaskLocked(task);
+    public bool HasSubtasks(TaskItem task) => _storage.GetSubtasks(task.Id).Count > 0;
+
     public IActionResult OnGet(int id)
     {
         Project = _storage.GetProject(id);
@@ -45,6 +48,34 @@ public class DetailsModel : PageModel
     public IActionResult OnPostToggleTask(int id, int taskId)
     {
         _storage.ToggleTaskDone(taskId);
+        return RedirectToPage(new { id });
+    }
+
+    public IActionResult OnPostMoveTaskUp(int id, int taskId)
+    {
+        _storage.MoveTaskUp(taskId);
+        return RedirectToPage(new { id });
+    }
+
+    public IActionResult OnPostMoveTaskDown(int id, int taskId)
+    {
+        _storage.MoveTaskDown(taskId);
+        return RedirectToPage(new { id });
+    }
+
+    public IActionResult OnPostRenameTask(int id, int taskId, string name)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            _storage.RenameTask(taskId, name);
+        }
+
+        return RedirectToPage(new { id });
+    }
+
+    public IActionResult OnPostDeleteTask(int id, int taskId)
+    {
+        _storage.DeleteTask(taskId);
         return RedirectToPage(new { id });
     }
 }

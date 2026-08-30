@@ -33,4 +33,20 @@ public class IndexModel : PageModel
 
         return RedirectToPage();
     }
+
+    public IActionResult OnPostRenameProject(int projectId, string name)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            _storage.RenameProject(projectId, name);
+        }
+
+        return RedirectToPage();
+    }
+
+    public IActionResult OnPostDeleteProject(int projectId)
+    {
+        _storage.DeleteProject(projectId);
+        return RedirectToPage();
+    }
 }
