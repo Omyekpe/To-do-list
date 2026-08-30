@@ -54,15 +54,22 @@ public class DetailsModel : PageModel
         return RedirectToPage(new { id });
     }
 
-    public IActionResult OnPostMoveTaskUp(int id, int taskId)
+    public IActionResult OnPostReorderTasks(int id, string orderedIds)
     {
-        _storage.MoveTaskUp(taskId);
+        var ids = orderedIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToList();
+        _storage.ReorderTasks(id, ids);
         return RedirectToPage(new { id });
     }
 
-    public IActionResult OnPostMoveTaskDown(int id, int taskId)
+    public IActionResult OnPostAddSubtaskToTask(int id, int taskId, string name)
     {
-        _storage.MoveTaskDown(taskId);
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            _storage.AddSubtask(taskId, name);
+        }
+
         return RedirectToPage(new { id });
     }
 

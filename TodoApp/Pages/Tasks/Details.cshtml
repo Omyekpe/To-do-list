@@ -30,24 +30,18 @@
     <p class="empty-state">No subtasks yet &mdash; break this task down by adding one above.</p>
 }
 
-<ol class="quest-list">
+<form method="post" asp-page-handler="ReorderSubtasks" id="reorder-subtasks-form">
+    <input type="hidden" name="orderedIds" id="reorder-subtasks-input" />
+</form>
+
+<ol class="quest-list" id="subtasks-list">
     @foreach (var subtask in Model.Subtasks)
     {
         var locked = Model.IsLocked(subtask);
         var hasSteps = Model.HasSteps(subtask);
-        <li class="quest-card @(locked ? "is-locked" : "") @(subtask.IsDone ? "is-done" : "")">
+        <li class="quest-card @(locked ? "is-locked" : "") @(subtask.IsDone ? "is-done" : "")" draggable="true" data-id="@subtask.Id">
+            <span class="drag-handle">&#10021;</span>
             <span class="order-pill">@subtask.Order</span>
-
-            <div class="move-group">
-                <form method="post" asp-page-handler="MoveSubtaskUp">
-                    <input type="hidden" name="subtaskId" value="@subtask.Id" />
-                    <button type="submit" class="btn-move">&uarr;</button>
-                </form>
-                <form method="post" asp-page-handler="MoveSubtaskDown">
-                    <input type="hidden" name="subtaskId" value="@subtask.Id" />
-                    <button type="submit" class="btn-move">&darr;</button>
-                </form>
-            </div>
 
             @if (locked)
             {
@@ -89,7 +83,14 @@
                 }
             </div>
 
-            <button type="button" class="btn-rename" onclick="toggleRename(this)">Rename</button>
+            <button type="button" class="btn-rename" onclick="toggleInline(this)">+ Step</button>
+            <form method="post" asp-page-handler="AddStepToSubtask" class="rename-form" style="display:none">
+                <input type="hidden" name="subtaskId" value="@subtask.Id" />
+                <input type="text" name="name" placeholder="New step name" />
+                <button type="submit" class="btn-rename">Add</button>
+            </form>
+
+            <button type="button" class="btn-rename" onclick="toggleInline(this)">Rename</button>
             <form method="post" asp-page-handler="RenameSubtask" class="rename-form" style="display:none">
                 <input type="hidden" name="subtaskId" value="@subtask.Id" />
                 <input type="text" name="name" value="@subtask.Name" />
@@ -104,3 +105,9 @@
         </li>
     }
 </ol>
+
+@section Scripts {
+    <script>
+        initDragReorder('subtasks-list', 'reorder-subtasks-form', 'reorder-subtasks-input');
+    </script>
+}

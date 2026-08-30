@@ -117,22 +117,20 @@ public class TodoStorageService
         return siblings.Take(index).Any(t => !t.IsDone);
     }
 
-    public void MoveTaskUp(int taskId) => MoveTask(taskId, -1);
-    public void MoveTaskDown(int taskId) => MoveTask(taskId, 1);
-
-    private void MoveTask(int taskId, int direction)
+    // Reassigns Order across a Project's Tasks to match the given id sequence (from a drag-and-drop).
+    public void ReorderTasks(int projectId, List<int> orderedIds)
     {
         lock (_lock)
         {
-            var task = GetTask(taskId);
-            if (task is null) return;
+            for (var i = 0; i < orderedIds.Count; i++)
+            {
+                var task = _data.Tasks.FirstOrDefault(t => t.Id == orderedIds[i] && t.ProjectId == projectId);
+                if (task is not null)
+                {
+                    task.Order = i + 1;
+                }
+            }
 
-            var siblings = GetTasks(task.ProjectId);
-            var index = siblings.FindIndex(t => t.Id == taskId);
-            var swapIndex = index + direction;
-            if (swapIndex < 0 || swapIndex >= siblings.Count) return;
-
-            (siblings[index].Order, siblings[swapIndex].Order) = (siblings[swapIndex].Order, siblings[index].Order);
             Save();
         }
     }
@@ -216,22 +214,20 @@ public class TodoStorageService
         return siblings.Take(index).Any(s => !s.IsDone);
     }
 
-    public void MoveSubtaskUp(int subtaskId) => MoveSubtask(subtaskId, -1);
-    public void MoveSubtaskDown(int subtaskId) => MoveSubtask(subtaskId, 1);
-
-    private void MoveSubtask(int subtaskId, int direction)
+    // Reassigns Order across a Task's Subtasks to match the given id sequence (from a drag-and-drop).
+    public void ReorderSubtasks(int taskId, List<int> orderedIds)
     {
         lock (_lock)
         {
-            var subtask = GetSubtask(subtaskId);
-            if (subtask is null) return;
+            for (var i = 0; i < orderedIds.Count; i++)
+            {
+                var subtask = _data.Subtasks.FirstOrDefault(s => s.Id == orderedIds[i] && s.TaskId == taskId);
+                if (subtask is not null)
+                {
+                    subtask.Order = i + 1;
+                }
+            }
 
-            var siblings = GetSubtasks(subtask.TaskId);
-            var index = siblings.FindIndex(s => s.Id == subtaskId);
-            var swapIndex = index + direction;
-            if (swapIndex < 0 || swapIndex >= siblings.Count) return;
-
-            (siblings[index].Order, siblings[swapIndex].Order) = (siblings[swapIndex].Order, siblings[index].Order);
             Save();
         }
     }
@@ -313,22 +309,20 @@ public class TodoStorageService
         return siblings.Take(index).Any(s => !s.IsDone);
     }
 
-    public void MoveStepUp(int stepId) => MoveStep(stepId, -1);
-    public void MoveStepDown(int stepId) => MoveStep(stepId, 1);
-
-    private void MoveStep(int stepId, int direction)
+    // Reassigns Order across a Subtask's Steps to match the given id sequence (from a drag-and-drop).
+    public void ReorderSteps(int subtaskId, List<int> orderedIds)
     {
         lock (_lock)
         {
-            var step = GetStep(stepId);
-            if (step is null) return;
+            for (var i = 0; i < orderedIds.Count; i++)
+            {
+                var step = _data.Steps.FirstOrDefault(s => s.Id == orderedIds[i] && s.SubtaskId == subtaskId);
+                if (step is not null)
+                {
+                    step.Order = i + 1;
+                }
+            }
 
-            var siblings = GetSteps(step.SubtaskId);
-            var index = siblings.FindIndex(s => s.Id == stepId);
-            var swapIndex = index + direction;
-            if (swapIndex < 0 || swapIndex >= siblings.Count) return;
-
-            (siblings[index].Order, siblings[swapIndex].Order) = (siblings[swapIndex].Order, siblings[index].Order);
             Save();
         }
     }

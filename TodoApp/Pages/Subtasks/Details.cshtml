@@ -30,23 +30,17 @@
     <p class="empty-state">No steps yet &mdash; break this subtask down by adding one above.</p>
 }
 
-<ol class="quest-list">
+<form method="post" asp-page-handler="ReorderSteps" id="reorder-steps-form">
+    <input type="hidden" name="orderedIds" id="reorder-steps-input" />
+</form>
+
+<ol class="quest-list" id="steps-list">
     @foreach (var step in Model.Steps)
     {
         var locked = Model.IsLocked(step);
-        <li class="quest-card @(locked ? "is-locked" : "") @(step.IsDone ? "is-done" : "")">
+        <li class="quest-card @(locked ? "is-locked" : "") @(step.IsDone ? "is-done" : "")" draggable="true" data-id="@step.Id">
+            <span class="drag-handle">&#10021;</span>
             <span class="order-pill">@step.Order</span>
-
-            <div class="move-group">
-                <form method="post" asp-page-handler="MoveStepUp">
-                    <input type="hidden" name="stepId" value="@step.Id" />
-                    <button type="submit" class="btn-move">&uarr;</button>
-                </form>
-                <form method="post" asp-page-handler="MoveStepDown">
-                    <input type="hidden" name="stepId" value="@step.Id" />
-                    <button type="submit" class="btn-move">&darr;</button>
-                </form>
-            </div>
 
             @if (locked)
             {
@@ -90,3 +84,9 @@
         </li>
     }
 </ol>
+
+@section Scripts {
+    <script>
+        initDragReorder('steps-list', 'reorder-steps-form', 'reorder-steps-input');
+    </script>
+}

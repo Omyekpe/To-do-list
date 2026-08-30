@@ -236,25 +236,18 @@ a {
 
 /* Controls */
 
-.move-group {
-  display: flex;
-  gap: 0.25rem;
+.drag-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  font-size: 1rem;
+  user-select: none;
+  padding: 0 0.15rem;
 }
 
-.btn-move {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 6px;
-  width: 1.9rem;
-  height: 1.9rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.btn-move:hover {
+.quest-card.dragging {
+  opacity: 0.4;
+  border-style: dashed;
   border-color: var(--accent);
-  color: var(--accent);
 }
 
 .rename-form {

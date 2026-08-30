@@ -59,15 +59,12 @@ public class DetailsModel : PageModel
         return RedirectToPage(new { id });
     }
 
-    public IActionResult OnPostMoveStepUp(int id, int stepId)
+    public IActionResult OnPostReorderSteps(int id, string orderedIds)
     {
-        _storage.MoveStepUp(stepId);
-        return RedirectToPage(new { id });
-    }
-
-    public IActionResult OnPostMoveStepDown(int id, int stepId)
-    {
-        _storage.MoveStepDown(stepId);
+        var ids = orderedIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToList();
+        _storage.ReorderSteps(id, ids);
         return RedirectToPage(new { id });
     }
 
