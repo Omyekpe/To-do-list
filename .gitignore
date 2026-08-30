@@ -1,0 +1,4 @@
+bin/
+obj/
+*.user
+TodoApp/data/todos.json

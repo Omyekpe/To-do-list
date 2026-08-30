@@ -1,0 +1,30 @@
+@page "{id:int}"
+@model TodoApp.Pages.Projects.DetailsModel
+@{
+    ViewData["Title"] = Model.Project?.Name ?? "Project";
+}
+
+<p><a asp-page="/Index">&larr; All Projects</a></p>
+<h1>@Model.Project?.Name</h1>
+
+<h2>Tasks</h2>
+
+<form method="post" asp-page-handler="AddTask">
+    <input type="text" asp-for="NewTaskName" placeholder="New task name" />
+    <button type="submit">Add Task</button>
+</form>
+
+<ul>
+    @foreach (var task in Model.Tasks)
+    {
+        <li>
+            <form method="post" asp-page-handler="ToggleTask" style="display:inline">
+                <input type="hidden" name="taskId" value="@task.Id" />
+                <input type="checkbox" onchange="this.form.submit()" checked="@task.IsDone" />
+            </form>
+            <a asp-page="/Tasks/Details" asp-route-id="@task.Id">
+                <span style="text-decoration:@(task.IsDone ? "line-through" : "none")">@task.Name</span>
+            </a>
+        </li>
+    }
+</ul>

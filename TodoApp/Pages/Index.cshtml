@@ -1,0 +1,21 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<h1>Projects</h1>
+
+<form method="post">
+    <input type="text" asp-for="NewProjectName" placeholder="New project name" />
+    <button type="submit">Add Project</button>
+</form>
+
+<ul>
+    @foreach (var project in Model.Projects)
+    {
+        <li>
+            <a asp-page="/Projects/Details" asp-route-id="@project.Id">@project.Name</a>
+        </li>
+    }
+</ul>
